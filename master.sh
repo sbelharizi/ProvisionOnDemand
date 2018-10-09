@@ -13,4 +13,3 @@ do
     echo "service \"$i\" not found"
   fi
 done
-
