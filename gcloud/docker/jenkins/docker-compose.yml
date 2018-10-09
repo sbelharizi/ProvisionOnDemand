@@ -1,4 +1,4 @@
-version: '2'
+version: '3.2'
 services:
   jenkins:
     image: jenkins/jenkins:lts
@@ -8,4 +8,6 @@ services:
       - "50000:50000"
       - "8080:8080"
     volumes:
-      - /var/jenkins_home
+      - type: bind
+        source: ./jenkins_home
+        target: /var/jenkins_home
