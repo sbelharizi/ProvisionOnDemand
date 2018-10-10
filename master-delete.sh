@@ -1,4 +1,3 @@
-
 #!/usr/bin/env bash
 
 source master.conf
@@ -10,7 +9,8 @@ do
   CURRENT_SERVICE="$POD_PROVIDER/$POD_TYPE/$i/"
   if [ -d $CURRENT_SERVICE ]; then
   	cd $CURRENT_SERVICE
-  	./create.sh
+  	echo $CURRENT_SERVICE
+  	./delete.sh
   	cd $PWD
     #./"$CURRENT_SERVICE/create.sh"
   else

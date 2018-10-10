@@ -1,7 +1,4 @@
 
-
-
-
 variable "POD_GCP_PROJECT" {}
 variable "POD_GCP_REGION" {}
 variable "POD_GCP_ZONE" {}
@@ -58,7 +55,7 @@ resource "google_compute_instance" "docker" {
     inline = [
       "sudo curl -sSL https://get.docker.com/ | sh",
       "sudo usermod -aG docker `echo $USER`",
-      "sudo docker run -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts"
+      "sudo docker run -d -p 80:80 nginx"
     ]
   }
 
@@ -75,7 +72,7 @@ resource "google_compute_firewall" "default" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80,8080"]
+    ports    = ["80"]
   }
 
   source_ranges = ["0.0.0.0/0"]
@@ -83,8 +80,9 @@ resource "google_compute_firewall" "default" {
 }
 
 
+
 output "external_ip" {
-	value = "${join("|", google_compute_instance.docker.*.network_interface.0.access_config.0.assigned_nat_ip)}"
+  value = "${join("|", google_compute_instance.docker.*.network_interface.0.access_config.0.assigned_nat_ip)}"
 }
 
 
