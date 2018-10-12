@@ -1,6 +1,8 @@
 #OSEF Des ds_store
 *.DS_Store*
 
+**.json
+
 # Local .terraform directories
 **/.terraform/*
 

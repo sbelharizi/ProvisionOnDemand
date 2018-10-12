@@ -1,13 +1,15 @@
 version: '3.2'
 services:
   jenkins:
-    image: jenkins/jenkins:lts
+    #image: jenkins/jenkins:lts
+    build: .
     environment:
-      JAVA_OPTS: "-Djava.awt.headless=true"
+      JAVA_OPTS: "-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false"
     ports:
       - "50000:50000"
       - "8080:8080"
     volumes:
-      - type: bind
-        source: ./jenkins_home
-        target: /var/jenkins_home
+      #- type: bind
+      #  source: ./jenkins_home
+      #  target: /var/jenkins_home
+      - /var/jenkins_home

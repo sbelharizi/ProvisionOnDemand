@@ -55,6 +55,8 @@ resource "google_compute_instance" "docker" {
     inline = [
       "sudo curl -sSL https://get.docker.com/ | sh",
       "sudo usermod -aG docker `echo $USER`",
+			"sudo curl -L \"https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)\" -o /usr/local/bin/docker-compose",
+			"sudo chmod +x /usr/local/bin/docker-compose",
       "sudo docker run -d -p 80:80 nginx"
     ]
   }
@@ -72,7 +74,7 @@ resource "google_compute_firewall" "default" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80"]
+    ports    = ["80","8080"]
   }
 
   source_ranges = ["0.0.0.0/0"]
@@ -84,7 +86,3 @@ resource "google_compute_firewall" "default" {
 output "external_ip" {
   value = "${join("|", google_compute_instance.docker.*.network_interface.0.access_config.0.assigned_nat_ip)}"
 }
-
-
-
-
