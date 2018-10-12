@@ -58,7 +58,8 @@ resource "google_compute_instance" "docker" {
     inline = [
       "sudo curl -sSL https://get.docker.com/ | sh",
       "sudo usermod -aG docker `echo $USER`",
-      "sudo docker run -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts"
+      "sudo docker run -d -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts",
+      "exit"
     ]
   }
 
@@ -75,11 +76,11 @@ resource "google_compute_firewall" "default" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80,8080"]
+    ports    = ["80", "8080", "50000"]
   }
 
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["docker-node"]
+  target_tags   = ["docker-jenkins-node"]
 }
 
 
