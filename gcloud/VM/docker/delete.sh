@@ -11,3 +11,7 @@ echo "let's start !"
 
 echo "APPLICATION DU PLAN TERRAFORM"
 terraform destroy
+
+rm plan.terraform
+rm terraform.tfstate*
+rm -rf  .terraform
