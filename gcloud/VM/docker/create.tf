@@ -4,9 +4,13 @@ variable "POD_GCP_REGION" {}
 variable "POD_GCP_ZONE" {}
 variable "POD_GCP_VM_TYPE" {}
 variable "POD_GCP_CREDIDENTIAL_PATH" {}
-variable "POD_GCP_PUB_KEY" {}
-variable "POD_GCP_PRIV_KEY" {}
+variable "POD_COMMON_PUB_KEY" {}
+variable "POD_COMMON_PRIV_KEY" {}
 variable "POD_GCP_NB_INSTANCE" {}
+variable "POD_GCP_USER" {
+  default = "root"
+}
+
 
 
 // Configure the Google Cloud provider
@@ -41,14 +45,14 @@ resource "google_compute_instance" "docker" {
   }
 
   metadata {
-    ssh-keys = "root:${file("${var.POD_GCP_PUB_KEY}")}"
+    ssh-keys = "root:${file("${var.POD_COMMON_PUB_KEY}")}"
   }
 
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
-      user        = "root"
-      private_key = "${file("${var.POD_GCP_PRIV_KEY}")}"
+      user        = "${POD_GCP_USER}"
+      private_key = "${file("${var.POD_COMMON_PRIV_KEY}")}"
       agent       = false
     }
 

@@ -5,9 +5,11 @@ variable "POD_AWS_REGION" {}
 variable "POD_AWS_VM_TYPE" {}
 variable "POD_AWS_SHARED_CREDIDENTIAL_PATH" {}
 variable "POD_AWS_NB_INSTANCE" {}
-variable "POD_AWS_SSH_PRIVATE_KEY" {}
+variable "POD_COMMON_SSH_PRIVATE_KEY" {}
 variable "POD_AWS_SSH_KEY_NAME" {}
-variable "POD_AWS_USER" {}
+variable "POD_COMMON_USER" {
+  default = "ubuntu"
+}
 
 
 provider "aws" {
@@ -17,7 +19,7 @@ provider "aws" {
 }
 
 
-//Debut de la configuration reseau. On utilise le reseau VPC par defaut 
+//Debut de la configuration reseau. On utilise le reseau VPC par defaut
 //Ensuite on cree les groupes de secu pour les regles Jenkins
 
 data "aws_vpc" "default" {
@@ -104,15 +106,12 @@ data "aws_ami" "ubuntu" {
 
 
 resource "aws_instance" "web" {
-  
-count = "${var.POD_AWS_NB_INSTANCE}"
-
-
+  count = "${var.POD_AWS_NB_INSTANCE}"
   ami           = "${data.aws_ami.ubuntu.id}"
   instance_type = "${var.POD_AWS_VM_TYPE}"
   key_name = "${var.POD_AWS_SSH_KEY_NAME}"
   //public_key = "${file("${var.POD_AWS_SSH_PRIVATE_KEY}")}"
-  
+
  security_groups = [
   	"tf_www_jk_security_group"
  ]
@@ -128,7 +127,7 @@ count = "${var.POD_AWS_NB_INSTANCE}"
     type = "ssh"
     user = "${var.POD_AWS_USER}"
 
-    private_key = "${file("${var.POD_AWS_SSH_PRIVATE_KEY}")}"
+    private_key = "${file("${var.POD_COMMON_SSH_PRIVATE_KEY}")}"
     agent       = false
 	timeout = "30s"
 }
@@ -150,10 +149,3 @@ count = "${var.POD_AWS_NB_INSTANCE}"
 output "public_ip" {
 value = "${join("|", aws_instance.web.*.public_ip)}"
 }
-
-
-
-
-
-
-
