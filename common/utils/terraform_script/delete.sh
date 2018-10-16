@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#echo "let's start !"
+echo "let's start !"
 
 
 
@@ -8,8 +8,10 @@
 #gcloud compute --project=$POD_GCLOUD_PROJECT instances create $POD_GCLOUD_INSTANCE_NAME --zone=$POD_GCLOUD_ZONE --machine-type=$POD_GCLOUG_VM_TYPE  --metadata-from-file=startup-script=/Users/sofiane.belharizi/Documents/ProvisionOnDemand/gcloud/VM/jenkins/StartupScriptInstallJenkins.sh
 
 
-# Execution du script de suppression de la plateforme 
-. $POD_PROJECT_LOCATION/common/utils/terraform_script/delete.sh
 
+echo "APPLICATION DU PLAN TERRAFORM"
+terraform destroy
 
-#echo "APPLICATION DU PLAN TERRAFORM"
+rm plan.terraform
+rm terraform.tfstate*
+rm -rf  .terraform
