@@ -51,7 +51,7 @@ resource "google_compute_instance" "docker" {
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
-      user        = "${POD_GCP_USER}"
+      user        = "${var.POD_GCP_USER}"
       private_key = "${file("${var.POD_COMMON_PRIV_KEY}")}"
       agent       = false
     }
