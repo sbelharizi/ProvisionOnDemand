@@ -4,8 +4,8 @@
 variable "POD_AWS_REGION" {}
 variable "POD_AWS_VM_TYPE" {}
 variable "POD_AWS_SHARED_CREDIDENTIAL_PATH" {}
-variable "POD_AWS_NB_INSTANCE" {}
-variable "POD_COMMON_SSH_PRIVATE_KEY" {}
+variable "POD_COMMON_NB_INSTANCE" {}
+variable "POD_COMMON_PRIV_KEY" {}
 variable "POD_AWS_SSH_KEY_NAME" {}
 variable "POD_COMMON_USER" {
   default = "ubuntu"
@@ -106,7 +106,7 @@ data "aws_ami" "ubuntu" {
 
 
 resource "aws_instance" "web" {
-  count = "${var.POD_AWS_NB_INSTANCE}"
+  count = "${var.POD_COMMON_NB_INSTANCE}"
   ami           = "${data.aws_ami.ubuntu.id}"
   instance_type = "${var.POD_AWS_VM_TYPE}"
   key_name = "${var.POD_AWS_SSH_KEY_NAME}"
@@ -125,9 +125,9 @@ resource "aws_instance" "web" {
 
  connection {
     type = "ssh"
-    user = "${var.POD_AWS_USER}"
+    user = "${var.POD_COMMON_USER}"
 
-    private_key = "${file("${var.POD_COMMON_SSH_PRIVATE_KEY}")}"
+    private_key = "${file("${var.POD_COMMON_PRIV_KEY}")}"
     agent       = false
 	timeout = "30s"
 }

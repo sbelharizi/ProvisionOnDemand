@@ -6,8 +6,8 @@ variable "POD_GCP_VM_TYPE" {}
 variable "POD_GCP_CREDIDENTIAL_PATH" {}
 variable "POD_COMMON_PUB_KEY" {}
 variable "POD_COMMON_PRIV_KEY" {}
-variable "POD_GCP_NB_INSTANCE" {}
-variable "POD_GCP_USER" {
+variable "POD_COMMON_NB_INSTANCE" {}
+variable "POD_COMMON_USER" {
   default = "root"
 }
 
@@ -23,7 +23,7 @@ provider "google" {
 
 
 resource "google_compute_instance" "docker" {
-  count = "${var.POD_GCP_NB_INSTANCE}"
+  count = "${var.POD_COMMON_NB_INSTANCE}"
 
   name         = "tf-docker-${count.index}"
   machine_type = "${var.POD_GCP_VM_TYPE}"
@@ -51,7 +51,7 @@ resource "google_compute_instance" "docker" {
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
-      user        = "${POD_GCP_USER}"
+      user        = "${var.POD_COMMON_USER}"
       private_key = "${file("${var.POD_COMMON_PRIV_KEY}")}"
       agent       = false
     }
