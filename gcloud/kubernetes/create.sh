@@ -20,3 +20,24 @@ echo "let's start !"
 
 
 #echo "liste des adresses ip : $TF_VAR_POD_AWS_PUBLIC_IP"
+
+
+echo "on genere les identifians pour l'installation de helm/tiller "
+gcloud container clusters get-credentials $TF_VAR_POD_GCP_PROJECT --zone=$TF_VAR_POD_GCP_ZONE
+
+
+echo "on applique tiller sur le cluster"
+kubectl apply -f jenkins/tiller-rbac.yaml
+
+
+
+echo "initialisation du compte de service tiller"
+helm init --service-account tiller
+
+
+sleep 60
+
+echo "installation de jenkins"
+helm install --name my-jenkins stable/jenkins
+
+
