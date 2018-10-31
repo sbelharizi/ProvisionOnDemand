@@ -11,6 +11,8 @@ variable "POD_COMMON_USER" {
   default = "ubuntu"
 }
 
+variable "POD_AWS_EKS_ARN_ROLE" {}
+
 
 provider "aws" {
   shared_credentials_file = "${file("${var.POD_AWS_SHARED_CREDIDENTIAL_PATH}")}"
@@ -85,67 +87,29 @@ resource "aws_security_group_rule" "allow_all_outbound" {
 }
 
 
-// fin de la conf reseau
-//debut de la conf de l'instance
-
-
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
+data "aws_subnet_ids" "example" {
+  vpc_id = "${data.aws_vpc.default.id}"
 }
 
+data "aws_subnet" "example" {
+  count = "${length(data.aws_subnet_ids.example.ids)}"
+  id = "${data.aws_subnet_ids.example.ids[count.index]}"
+}
 
-resource "aws_instance" "web" {
-  count = "${var.POD_COMMON_NB_INSTANCE}"
-  ami           = "${data.aws_ami.ubuntu.id}"
-  instance_type = "${var.POD_AWS_VM_TYPE}"
-  key_name = "${var.POD_AWS_SSH_KEY_NAME}"
-  //public_key = "${file("${var.POD_AWS_SSH_PRIVATE_KEY}")}"
+resource "aws_eks_cluster" "demo_cluster" {
+  name            = "tf-eks-cluster-${count.index}"
+  role_arn        = "${var.POD_AWS_EKS_ARN_ROLE}"
 
- security_groups = [
-  	"tf_www_jk_security_group"
- ]
-
-  tags {
-    Name = "tf-docker-${count.index}"
+  vpc_config {
+    subnet_ids         = ["${data.aws_subnet_ids.example.ids}"]
   }
 
 
-// Fin de la conf de l'instance, debut des actions du startup script
-
- connection {
-    type = "ssh"
-    user = "${var.POD_COMMON_USER}"
-
-    private_key = "${file("${var.POD_COMMON_PRIV_KEY}")}"
-    agent       = false
-	timeout = "30s"
-}
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo curl -sSL https://get.docker.com/ | sh",
-      "sudo usermod -aG docker `echo $USER`",
-      "sudo curl -L \"https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m)\" -o /usr/local/bin/docker-compose",
-	  "sudo chmod +x /usr/local/bin/docker-compose",
-      "sudo docker run -d -p 80:80 nginx"
-    ]
 }
 
 
-}
 
 
-output "public_ip" {
-value = "${join("|", aws_instance.web.*.public_ip)}"
-}
+//output "endpoint" {
+//value = "${aws_eks_cluster.example.certificate_authority.0.data}"
+//}
