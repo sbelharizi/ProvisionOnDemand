@@ -19,4 +19,7 @@ echo "let's start !"
 #source terraform_outputs.sh
 
 
-#echo "liste des adresses ip : $TF_VAR_POD_AWS_PUBLIC_IP"
+
+echo "liste des adresses ip : $TF_VAR_POD_GCP_EXTERNAL_IP"
+
+
